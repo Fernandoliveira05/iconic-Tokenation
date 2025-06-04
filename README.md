@@ -3,11 +3,10 @@
 <div align="center">
   <img src="./iconic_logo.jpg" alt="ICONIC Logo" width="300"/>
   <h3>Turning wishes and style into memorable moments</h3>
-  <p>A revolutionary platform built on Sui blockchain for the media and entertainment industry</p>
+  <p>A revolutionary platform built on BNB Chain for the media and entertainment industry</p>
   
-  [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://iconicxp.netlify.app)
-  [![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/iconic_xp)
-  [![Sui](https://img.shields.io/badge/Sui-6B4CD3?style=for-the-badge&logo=sui&logoColor=white)](https://sui.io/)
+  [![Demo](https://img.shields.io/badge/Live_Demo-00C7B7?style=for-the-badge&logo=vercel&logoColor=white)](https://iconicxp.vercel.app)  
+  [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Fernandoliveira05/iconic-Tokenation)
 </div>
 
 ## 📋 Table of Contents
@@ -37,71 +36,69 @@
 
 ## 🌟 Overview
 
-ICONIC is a revolutionary platform that is redefining the media and entertainment experience through Sui blockchain technology. Our platform transforms personal desires into memorable experiences by connecting event creators directly with users through transparent, secure interactions.
-
-We're participating in the **Sui Overflow 2025** hackathon in the **Media and Entertainment** track, with the goal of securing incubation to expand our impact in the global market.
+ICONIC is a revolutionary platform that is redefining the media and entertainment experience through BNB Chain technology. Our platform transforms personal desires into memorable experiences by connecting event creators directly with users through transparent, secure interactions.
 
 ## 💼 Business Model
 
 ICONIC operates on a multi-sided platform business model that creates value for both content creators and users:
 
-### For Event Creators:
-- **Direct Monetization**: Eliminate intermediaries and receive 90% of revenue
-- **Authentic Connection**: Build genuine relationships with fans and followers
-- **Creative Tools**: Access to tools for creating personalized experiences
-- **IP Protection**: Blockchain-based verification of intellectual property
+### For Content Creators:
+- **Direct Monetization**: Eliminate intermediaries and receive 90% of revenue  
+- **Authentic Connection**: Build genuine relationships with fans and followers  
+- **Creative Tools**: Access to tools for creating personalized experiences  
+- **IP Protection**: Blockchain-based verification of intellectual property  
 
 ### For Users:
-- **Personalized Experiences**: Access to exclusive content tailored to individual preferences
-- **Data Control**: Full ownership and control over personal data
-- **Community Participation**: Active role in shaping the platform's future
-- **Reward System**: Incentives for engagement and contributions
+- **Personalized Experiences**: Access to exclusive content tailored to individual preferences  
+- **Data Control**: Full ownership and control over personal data  
+- **Community Participation**: Active role in shaping the platform's future  
+- **Reward System**: Incentives for engagement and contributions  
 
 ### Revenue Streams:
-1. **Transaction Fees**: Small percentage from creator-user transactions
-2. **Premium Subscriptions**: Enhanced features for power users
-3. **Creator Verification**: Paid verification for established creators
-4. **Promotional Opportunities**: Featured placement for content
+1. **Transaction Fees**: Small percentage from creator-user transactions  
+2. **Premium Subscriptions**: Enhanced features for power users  
+3. **Creator Verification**: Paid verification for established creators  
+4. **Promotional Opportunities**: Featured placement for content  
 
 Our model is designed to be sustainable while prioritizing value creation for all participants in the ecosystem.
 
 ## ✨ Features
 
-- **Recommendation Engine**: Token-based and preference-driven content recommendations
-- **Secure Blockchain Transactions**: Transparent and immutable record-keeping
-- **Creator Dashboard**: Analytics and audience insights
-- **User Preference Center**: Detailed control over content discovery
-- **Smart Contract Integration**: Automated royalty distribution
-- **Mobile-First Design**: Optimized for on-the-go experiences
+- **Recommendation Engine**: Token-based and preference-driven content recommendations  
+- **Secure Blockchain Transactions**: Transparent and immutable record-keeping on BNB Chain  
+- **Creator Dashboard**: Analytics and audience insights  
+- **User Preference Center**: Detailed control over content discovery  
+- **Smart Contract Integration**: Automated royalty distribution  
+- **Mobile-First Design**: Optimized for on-the-go experiences  
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React, TypeScript, TailwindCSS, Firebase Authentication
-- **Backend**: Node.js, NestJs
-- **Database**: PostgreSQL (via Supabase), Redis
-- **Authentication**: Firebase Authentication, JWT
-- **Storage**: Firebase Storage, Supabase Storage
-- **Blockchain**: Sui Network (testnet)
-- **Smart Contracts**: Move language
-- **Deployment**: Vercel (frontend), AWS (backend)/Render
+- **Frontend**: React, TypeScript, TailwindCSS, Firebase Authentication  
+- **Backend**: Node.js, NestJs  
+- **Database**: PostgreSQL (via Supabase), Redis  
+- **Authentication**: Firebase Authentication, JWT  
+- **Storage**: Firebase Storage, Supabase Storage  
+- **Blockchain**: BNB Chain (testnet)  
+- **Smart Contracts**: Solidity (deployed on BNB Chain)  
+- **Deployment**: Vercel (frontend), AWS (backend) / Render  
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Git
-- Sui CLI (for blockchain interaction)
+- Node.js (v16 or higher)  
+- npm or yarn  
+- Git  
+- BNB Chain CLI or Web3 provider (for blockchain interaction)  
 
 ### Installation
 
 #### Clone the repository
 
 ```bash
-git clone https://github.com/iconic-team-ofc/iconic.git
-cd iconic
-```
+git clone https://github.com/Fernandoliveira05/iconic-Tokenation.git
+cd iconic-Tokenation
+````
 
 #### Frontend Setup
 
@@ -117,6 +114,7 @@ The frontend will be available at `http://localhost:3000`
 
 ```bash
 cd backend
+npx prisma generate
 npm install
 npm run dev:start
 ```
@@ -160,7 +158,7 @@ REDIS_HOST=<request from team>
 REDIS_PORT=<request from team>
 REDIS_PASSWORD=<request from team>
 FIREBASE_SERVICE_ACCOUNT_BASE64=<request from team>
-SUI_RPC_URL=https://fullnode.testnet.sui.io:443
+BNB_RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
 ```
 
 > 📝 **Note**: To obtain the necessary credentials, please contact the ICONIC team. Without these configurations, the project will not work locally.
@@ -168,39 +166,38 @@ SUI_RPC_URL=https://fullnode.testnet.sui.io:443
 ## 📁 Project Structure
 
 ```
-iconic/
+iconic-Tokenation/
 ├── frontend/          # React frontend application
 ├── backend/           # Node.js backend API
-├── contracts/         # Sui Move smart contracts
+├── contracts/         # Solidity smart contracts
 ├── docs/              # Documentation and business model
 └── README.md          # Project documentation
 ```
 
 ## 🗺️ Roadmap
 
-- **Q3 2025**: Launch of creator onboarding program and initial user testing
-- **Q4 2025**: Public beta release with core functionality
-- **Q1 2026**: Full platform launch with enhanced features
-- **Q2 2026**: International expansion and partnership program
+* **Q3 2025**: Launch of creator onboarding program and initial user testing
+* **Q4 2025**: Public beta release with core functionality
+* **Q1 2026**: Full platform launch with enhanced features
+* **Q2 2026**: International expansion and partnership program
 
 ## 👥 Team
 
 Our passionate and multidisciplinary team combines expertise in blockchain development, user experience design, and business strategy:
 
-- **[Nicollas Isaac](https://www.linkedin.com/in/nicollas-isaac/)** - Blockchain Development & Systems Architecture
-- **[Fernando Soares de Oliveira](https://www.linkedin.com/in/fernando-soares-de-oliveira/)** - User Experience & Product Design
-- **[Davi Motta](https://www.linkedin.com/in/davi-motta/)** - Business Strategy & Growth
+* **[Nicollas Isaac](https://www.linkedin.com/in/nicollas-isaac/)** – Blockchain Development & Systems Architecture
+* **[Fernando Soares de Oliveira](https://www.linkedin.com/in/fernando-soares-de-oliveira/)** – User Experience & Product Design
 
 ## 🔗 Links
 
-- **Live Demo**: [iconic-seven.vercel.app](https://iconic-seven.vercel.app)
-- **GitHub Repository**: [github.com/iconic-team-ofc/iconic](https://github.com/iconic-team-ofc/iconic)
-- **Pitch Deck**: [Google Drive](https://drive.google.com/drive/folders/1dObvPZSFN1iL5Bf8d0ThJO20wS9cuBBa?usp=sharing)
-- **X (Twitter)**: [x.com/iconic_xp](https://x.com/iconic_xp)
-- **DEMO VIDEO**: [YouTube](https://www.youtube.com/watch?v=CDTBchRFWGE)
+* **Live Demo**: [https://iconicxp.vercel.app](https://iconicxp.vercel.app)
+* **GitHub Repository**: [https://github.com/Fernandoliveira05/iconic-Tokenation](https://github.com/Fernandoliveira05/iconic-Tokenation)
+
 ---
 
 <div align="center">
-  <p>Powered by Sui Blockchain</p>
+  <p>Powered by BNB Chain</p>
   <p>© 2025 ICONIC. All rights reserved.</p>
 </div>
+```
+```
