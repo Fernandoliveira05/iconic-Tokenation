@@ -25,8 +25,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col justify-evenly items-center bg-gray-50 px-6 relative">
       {/* Desktop advisory: open on mobile */}
-      <div className="hidden sm:block absolute top-4 left-10w-full flex justify-center">
-          For the best ICONIC experience, please open this app on your notebook device
+      <div className="hidden sm:block absolute top-4 left-10 w-full flex justify-center">
+        For the best ICONIC experience, please open this app on your notebook
+        device
       </div>
 
       {/* Animated gradient title */}
@@ -70,18 +71,6 @@ export default function Login() {
         {loading ? "Signing in..." : "Sign in with Google"}
       </button>
 
-      {/* Powered by Sui Blockchain */}
-      <div className="mt-6 text-xs text-gray-500 flex flex-col items-center gap-1">
-        <span>
-          <strong>Powered by Sui Blockchain</strong>
-        </span>
-        <span>
-          <em>
-            Note: Sometimes it may take a few seconds to log in, due to
-            free-tier backend pooling.
-          </em>
-        </span>
-      </div>
       <style>{`
         @keyframes gradient-pan {
           0%,100% {background-position:0% 50%;}
