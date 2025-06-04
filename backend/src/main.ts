@@ -16,8 +16,8 @@ async function bootstrap() {
   // 2) CORS (deve vir antes de qualquer outro middleware)
   app.enableCors({
     origin: [
-      'http://localhost:5173',
-      'http://localhost:4173',
+      'http://localhost:5173', // Ambiente local (Vite)
+      'http://localhost:4173', // Ambiente local (Vite)
       'https://iconic-seven.vercel.app',
       'https://iconicxp.netlify.app',
     ],
@@ -32,7 +32,10 @@ async function bootstrap() {
   // 4) Validação global
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-  // 5) Swagger setup
+  // 5) Define o prefixo global da API
+  app.setGlobalPrefix('api');
+
+  // 6) Swagger setup
   const config = new DocumentBuilder()
     .setTitle('ICONIC API')
     .setDescription('Documentação da API')

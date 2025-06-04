@@ -41,7 +41,7 @@ export default function Profile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const { data } = await api.get<User>("/users/me");
+        const { data } = await api.get<User>("/api/users/me");
         if (data.date_of_birth)
           data.date_of_birth = data.date_of_birth.split("T")[0];
 
@@ -54,7 +54,7 @@ export default function Profile() {
         }
         setUser(data);
 
-        const photosRes = await api.get<UserPhoto[]>("/user-photos");
+        const photosRes = await api.get<UserPhoto[]>("/api/user-photos");
         setPhotos(photosRes.data);
       } catch (err) {
         console.error(err);
@@ -102,7 +102,7 @@ export default function Profile() {
     if (phoneNumber) dto.phone_number = `+${phoneCode}${phoneNumber}`;
 
     try {
-      await api.patch("/users/me", dto); // nova rota
+      await api.patch("/api/users/me", dto); // nova rota
       toast.success("Profile updated!");
     } catch (error: any) {
       console.error(error);
@@ -173,12 +173,12 @@ export default function Profile() {
         .data.publicUrl;
 
       if (isProfile) {
-        await api.patch("/users/profile-picture", { url });
+        await api.patch("/api/users/profile-picture", { url });
         setUser((u) => u && { ...u, profile_picture_url: url });
         toast.success("Profile picture updated!");
       } else {
-        await api.post("/user-photos", { url, position: photos.length + 1 });
-        const photosRes = await api.get<UserPhoto[]>("/user-photos");
+        await api.post("/api/user-photos", { url, position: photos.length + 1 });
+        const photosRes = await api.get<UserPhoto[]>("/api/user-photos");
         setPhotos(photosRes.data);
         toast.success("Photo added!");
       }
@@ -196,7 +196,7 @@ export default function Profile() {
           label: "Yes, delete",
           onClick: async () => {
             try {
-              await api.delete(`/user-photos/${id}`);
+              await api.delete(`/api/user-photos/${id}`);
               setPhotos((p) => p.filter((x) => x.id !== id));
               toast.success("Photo removed.");
             } catch {

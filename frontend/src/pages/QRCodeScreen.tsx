@@ -24,7 +24,7 @@ export default function QRCodeScreen() {
   const fetchQr = async () => {
     try {
       const { data } = await api.post<{ qr_code_url: string }>(
-        "/event-checkins/generate",
+        "/api/event-checkins/generate",
         { event_id: eventId }
       );
       setQrUrl(data.qr_code_url);
@@ -40,7 +40,7 @@ export default function QRCodeScreen() {
   const pollCheckedIn = async () => {
     try {
       const { data } = await api.get<{ checkedIn: boolean }>(
-        `/event-checkins/event/${eventId}/user/${user!.id}/checked`
+        `/api/event-checkins/event/${eventId}/user/${user!.id}/checked`
       );
       if (data.checkedIn) {
         setCheckedIn(true);

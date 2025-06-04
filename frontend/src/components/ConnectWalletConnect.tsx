@@ -1,3 +1,4 @@
+// src/components/ConnectWalletButton.tsx
 import React, { useCallback } from "react";
 import { useWallet } from "@/contexts/WalletContext";
 

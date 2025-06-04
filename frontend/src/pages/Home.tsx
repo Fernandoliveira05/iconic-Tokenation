@@ -60,7 +60,7 @@ function HomeContent() {
   const [iconics, setIconics] = useState<User[]>([]);
   useEffect(() => {
     (async () => {
-      const { data } = await api.get<User[]>("/users/iconic");
+      const { data } = await api.get<User[]>("/api/users/iconic");
       setIconics(data.filter((u) => u.profile_picture_url).slice(0, ic));
     })();
   }, [ic]);
@@ -74,7 +74,7 @@ function HomeContent() {
     setWaiting(true);
     try {
       const txId = await payFee(0.1);
-      await fetch(`${import.meta.env.VITE_API_URL}/users/iconic/${user!.id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/users/iconic/${user!.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

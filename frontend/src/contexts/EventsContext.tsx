@@ -52,7 +52,7 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   const refresh = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get<Event[]>("/events/recommended");
+      const { data } = await api.get<Event[]>("api/events/recommended");
       setEvents(data);
       setError(null);
     } catch (err: any) {
@@ -89,7 +89,7 @@ export function EventsProvider({ children }: { children: ReactNode }) {
     participationId: string,
     eventId: string
   ) => {
-    await api.patch(`/event-participations/${participationId}`, {
+    await api.patch(`api/event-participations/${participationId}`, {
       status: "cancelled",
     });
     setEvents((prev) =>

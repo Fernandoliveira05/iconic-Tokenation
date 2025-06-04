@@ -33,7 +33,7 @@ export default function TicketsPage() {
     const fetchEvents = async () => {
       try {
         const endpoint =
-          tab === "events" ? "/events/recommended" : "/events/participating";
+          tab === "events" ? "/api/events/recommended" : "/api/events/participating";
         const { data } = await api.get(endpoint);
         setEvents(data);
       } catch {
@@ -55,7 +55,7 @@ export default function TicketsPage() {
     try {
       const txId = await payFee(0.1);
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/iconic/${user!.id}`,
+        `${import.meta.env.VITE_API_URL}/api/users/iconic/${user!.id}`,
         {
           method: "POST",
           headers: {
@@ -87,7 +87,7 @@ export default function TicketsPage() {
   const handleJoin = async (evt: any) => {
     try {
       // You should have a context or API call to register participation, example:
-      await api.post("/event-participations", {
+      await api.post("/api/event-participations", {
         event_id: evt.id,
         status: "confirmed",
       });

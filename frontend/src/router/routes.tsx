@@ -60,6 +60,16 @@ export function AppRoutes() {
           }
         />
 
+        {/* Adicionando a nova rota /bip que também usa ScannerScreen */}
+        <Route
+          path="/events/:id/bip"
+          element={
+            <PrivateRoute>
+              <ScannerScreen />
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/tickets"
           element={
@@ -90,3 +100,4 @@ export function AppRoutes() {
     </BrowserRouter>
   );
 }
+

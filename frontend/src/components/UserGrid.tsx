@@ -27,7 +27,7 @@ export const UserGrid: React.FC<UserGridProps> = ({ endpoint }) => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await api.get<User[]>(endpoint);
+        const { data } = await api.get<User[]>(`/api${endpoint}`);
         const shuffled = data
           .map((u) => ({ value: u, sort: Math.random() }))
           .sort((a, b) => a.sort - b.sort)
@@ -43,7 +43,7 @@ export const UserGrid: React.FC<UserGridProps> = ({ endpoint }) => {
 
   const openProfile = async (id: string) => {
     try {
-      const { data } = await api.get(`/users/public/${id}`);
+      const { data } = await api.get(`/api/users/public/${id}`);
       setSelectedUser(data);
     } catch (err) {
       console.error("Error loading public profile:", err);
