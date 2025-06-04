@@ -1,0 +1,8 @@
+[package]
+name = "move_paywall"
+version = "0.1.0"
+authors = ["seu@email.com"]
+
+[addresses]
+move_paywall = "0x0"   # será substituído pelo Package ID no publish
+sui           = "0x2"   # alias padrão para o framework Sui

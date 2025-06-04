@@ -1,0 +1,12 @@
+[package]
+name = "move_paywall"
+version = "0.1.0"
+authors = ["seu@email.com"]
+
+[dependencies]
+# A dependência Sui já está definida pelo scaffold; não remova
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+
+[addresses]
+move_paywall = "0x0"   # se refere ao seu pacote, será substituído no publish
+sui           = "0x2"   # endereço fixo da framework Sui

@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  iconic
+  admin
+  scanner
+}
+
+model User {
+  id                        String       @id @default(uuid())
+  full_name                 String
+  email                     String       @unique
+  phone_number              String?
+  instagram                 String?
+  nickname                  String       @unique @db.VarChar(30)
+  profile_picture_url       String?
+  bio                       String?      @db.Text
+  show_public_profile       Boolean      @default(true)
+  show_profile_to_iconics   Boolean      @default(true)
+  is_iconic                 Boolean      @default(false)
+  iconic_expires_at         DateTime?
+  role                      Role         @default(user)
+  date_of_birth             DateTime?  
+  created_at                DateTime     @default(now())
+  updated_at                DateTime     @updatedAt
+
+  participations            EventParticipation[]
+  checkins                  EventCheckin[]
+  admin_checkins            EventCheckin[] @relation("AdminCheckin")
+  photos                    UserPhoto[]
+  iconicChatMessages        IconicChatMessage[] // <--- NOVO: Chat dos Iconics
+
+  @@map("User")
+}
+
+model UserPhoto {
+  id         String   @id @default(uuid())
+  user_id    String
+  url        String   @db.VarChar(2048)
+  position   Int
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, url])
+  @@unique([user_id, position])
+}
+
+model Event {
+  id                String   @id @default(uuid())
+  title             String   @db.VarChar(120)
+  description       String
+  location          String   @db.VarChar(200)
+  date              DateTime
+  time              DateTime
+  category          EventCategory
+  is_exclusive      Boolean
+  is_public         Boolean  @default(false)
+  max_attendees     Int
+  current_attendees Int      @default(0)
+  partner_name      String?  @db.VarChar(100)
+  partner_logo_url  String?
+  cover_image_url   String
+  created_at        DateTime @default(now())
+  participations    EventParticipation[]
+  checkins          EventCheckin[]
+}
+
+model EventParticipation {
+  id           String   @id @default(uuid())
+  user_id      String
+  event_id     String
+  status       ParticipationStatus
+  created_at   DateTime @default(now())
+  cancelled_at DateTime?
+
+  user         User     @relation(fields: [user_id], references: [id])
+  event        Event    @relation(fields: [event_id], references: [id])
+}
+
+model EventCheckin {
+  id                   String   @id @default(uuid())
+  event_id             String
+  user_id              String
+  qr_token             String   @unique @db.VarChar(64)
+  scanned_by_admin_id  String?
+  checkin_time         DateTime
+  created_at           DateTime @default(now())
+
+  event                Event    @relation(fields: [event_id], references: [id])
+  user                 User     @relation(fields: [user_id], references: [id])
+  scanned_by           User?    @relation("AdminCheckin", fields: [scanned_by_admin_id], references: [id])
+}
+
+model IconicChatMessage {
+  id         String   @id @default(uuid())
+  user_id    String
+  message    String
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+enum EventCategory {
+  party
+  drop
+  dinner
+  fashion_show
+  other
+}
+
+enum ParticipationStatus {
+  confirmed
+  cancelled
+}
