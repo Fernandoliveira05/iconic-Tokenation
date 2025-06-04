@@ -20,6 +20,7 @@ async function bootstrap() {
       'http://localhost:4173', // Ambiente local (Vite)
       'https://iconic-seven.vercel.app',
       'https://iconicxp.netlify.app',
+      'https://iconicxp.vercel.app'
     ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Transaction-Id'],
