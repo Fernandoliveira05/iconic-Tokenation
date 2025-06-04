@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PrismaService } from '../prisma/prisma.service';
-import { SuiModule } from '../sui/sui.module';
 
 @Module({
-  imports: [SuiModule], 
+  imports: [], 
   controllers: [UsersController],
   providers: [UsersService, PrismaService],
   exports: [UsersService],

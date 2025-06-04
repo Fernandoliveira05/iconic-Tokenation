@@ -31,7 +31,7 @@ export default function IconicNetworkPage() {
     try {
       const txId = await payFee(0.1);
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/iconic/${user!.id}`,
+        `${import.meta.env.VITE_API_URL}/api/users/iconic/${user!.id}`,
         {
           method: "POST",
           headers: {

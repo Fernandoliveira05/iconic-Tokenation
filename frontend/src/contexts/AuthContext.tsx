@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [initialized, setInitialized] = useState(false);
 
   const fetchMe = async () => {
-    const res = await api.get<User>("/users/me");
+    const res = await api.get<User>("/api/users/me");
     setUser(res.data);
     setIsIconic(Boolean(res.data.is_iconic));
   };
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const exchangeAndStoreToken = async (idToken: string) => {
     const { data } = await api.post<{ access_token: string }>(
-      "/auth/login/firebase",
+      "/api/auth/login/firebase",
       { idToken }
     );
     const jwt = data.access_token;

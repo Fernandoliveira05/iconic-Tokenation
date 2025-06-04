@@ -51,7 +51,7 @@ export default function EventDetail() {
     if (!id) return;
     (async () => {
       try {
-        const { data } = await api.get<EventDetail>(`/events/${id}`);
+        const { data } = await api.get<EventDetail>(`/api/events/${id}`);
         setEvent(data);
       } catch {
         toast.error("Failed to load event details.");
@@ -63,32 +63,29 @@ export default function EventDetail() {
 
   // Load check-in status
   useEffect(() => {
-    if (!event) return;
+    if (!event || !user) return;
     (async () => {
       try {
         const { data } = await api.get<{ checkedIn: boolean }>(
-          `/event-checkins/event/${id}/user/${user.id}/checked`
+          `/api/event-checkins/event/${id}/user/${user.id}/checked`
         );
         setCheckedIn(data.checkedIn);
       } catch {
         // ignore
       }
     })();
-  }, [event, id, user.id]);
+  }, [event, id, user]);
 
   // RSVP handler
   const handleJoin = async () => {
     if (!event || processing) return;
-
-    // If exclusive and not ICONIC, show BecomeIconic modal
     if (event.is_exclusive && !isIconic) {
       setBecomeOpen(true);
       return;
     }
-
     setProcessing(true);
     try {
-      const { data } = await api.post<{ id: string }>(`/event-participations`, {
+      const { data } = await api.post<{ id: string }>(`/api/event-participations`, {
         event_id: event.id,
         status: "confirmed",
       });
@@ -119,7 +116,7 @@ export default function EventDetail() {
     if (!event?.participation_id || processing) return;
     setProcessing(true);
     try {
-      await api.patch(`/event-participations/${event.participation_id}`, {
+      await api.patch(`/api/event-participations/${event.participation_id}`, {
         status: "cancelled",
       });
       setEvent((e) =>
@@ -151,7 +148,7 @@ export default function EventDetail() {
     try {
       const txId = await payFee(0.1);
       const res = await api.post(
-        `/users/iconic/${user!.id}`,
+        `/api/users/iconic/${user!.id}`,
         {},
         {
           headers: {
@@ -164,6 +161,7 @@ export default function EventDetail() {
       if (res.status === 200) {
         toast.success("You are now ICONIC!");
         setBecomeOpen(false);
+        // TODO: Idealmente, atualizar o estado global do usuário (isIconic) aqui
       } else {
         toast.error("Subscription failed.");
       }
@@ -174,10 +172,11 @@ export default function EventDetail() {
     }
   };
 
-  // New “Bippar” handler
-  const handleBip = () => {
+  // Handler para acessar o scanner (unificado)
+  const handleAccessScanner = () => {
     if (event) {
-      navigate(`/events/${event.id}/bip`);
+      // Navega para a rota de scan, que agora também é usada por 'bip'
+      navigate(`/events/${event.id}/scan`);
     }
   };
 
@@ -201,8 +200,8 @@ export default function EventDetail() {
     minute: "2-digit",
   });
   const role = user?.role.toLowerCase() ?? "";
-  const canScan = ["admin", "scanner"].includes(role);
-  const canBip = ["admin", "bipper"].includes(role);
+  // Verifica se o usuário tem *qualquer* permissão para acessar o scanner
+  const canAccessScanner = ["admin", "scanner", "bipper"].includes(role);
   const seatsLeft = event.max_attendees - event.current_attendees;
   const soldOut = seatsLeft <= 0;
 
@@ -278,18 +277,22 @@ export default function EventDetail() {
               )}
             </div>
 
+            {/* Lógica dos botões unificada */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               {!event.is_participating && !soldOut ? (
+                // Botão de RSVP
                 <button
                   onClick={handleJoin}
                   disabled={processing}
-                  className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white font-bold py-3 rounded-full shadow-lg transition hover:brightness-110 disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white font-bold py-3 rounded-full shadow-lg transition hover:brightness-110 disabled:opacity-50 md:col-span-2"
                 >
                   {processing ? "Joining..." : "RSVP Now"}
                 </button>
-              ) : (
+              ) : event.is_participating ? (
+                // Botões para quem está participando
                 <>
                   {!checkedIn && (
+                    // Botão QR Code se ainda não fez check-in
                     <button
                       onClick={() => navigate(`/events/${event.id}/checkin`)}
                       className="w-full flex items-center justify-center bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold py-3 rounded-full shadow transition hover:brightness-110"
@@ -297,35 +300,35 @@ export default function EventDetail() {
                       <QrCode className="w-5 h-5 mr-2" /> Get Access QR
                     </button>
                   )}
-                  {canScan && (
+                  {canAccessScanner && (
+                    // Botão UNIFICADO para acessar scanner (scan/bip)
                     <button
-                      onClick={() => navigate(`/events/${event.id}/scan`)}
-                      className="w-full flex items-center justify-center bg-white border-2 border-primary text-primary font-semibold py-3 rounded-full shadow transition hover:bg-primary/10"
-                    >
-                      <Camera className="w-5 h-5 mr-2" /> Scanner Mode
-                    </button>
-                  )}
-                  {canBip && (
-                    <button
-                      onClick={handleBip}
+                      onClick={handleAccessScanner}
                       className="w-full flex items-center justify-center bg-blue-600 text-white font-semibold py-3 rounded-full shadow transition hover:brightness-110"
                     >
-                      Bippar
+                      <Camera className="w-5 h-5 mr-2" /> Access Scanner
                     </button>
                   )}
                   {!checkedIn && (
+                    // Botão Cancelar RSVP se ainda não fez check-in
                     <button
                       onClick={handleCancel}
                       disabled={processing}
-                      className="w-full text-center text-sm text-gray-500 underline disabled:opacity-50"
+                      className="w-full text-center text-sm text-gray-500 underline disabled:opacity-50 md:col-span-2"
                     >
                       {processing ? "Cancelling..." : "Cancel RSVP"}
                     </button>
                   )}
                 </>
+              ) : (
+                // Mensagem de Esgotado
+                <div className="md:col-span-2 text-center py-3">
+                  <span className="text-red-600 font-semibold">Sold Out</span>
+                </div>
               )}
             </div>
 
+            {/* Lista de participantes com check-in */}
             {event.is_participating && (
               <section className="mt-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
@@ -368,3 +371,4 @@ export default function EventDetail() {
     </>
   );
 }
+

@@ -27,7 +27,7 @@ export function IconicChat() {
     (async () => {
       setLoading(true);
       try {
-        const { data } = await api.get<ChatMessage[]>("/iconic/chat");
+        const { data } = await api.get<ChatMessage[]>("/api/iconic/chat");
         setMessages(data.reverse());
       } catch {
       } finally {
@@ -45,7 +45,7 @@ export function IconicChat() {
     setSending(true);
     const text = message.trim();
     try {
-      await api.post("/iconic/chat", { message: text });
+      await api.post("/api/iconic/chat", { message: text });
       setMessages((prev) => [
         ...prev,
         {
@@ -65,7 +65,7 @@ export function IconicChat() {
   };
   const openProfile = async (user_id: string) => {
     try {
-      const { data } = await api.get(`/users/public/${user_id}`);
+      const { data } = await api.get(`/api/users/public/${user_id}`);
       setSelectedUser(data);
     } catch {}
   };

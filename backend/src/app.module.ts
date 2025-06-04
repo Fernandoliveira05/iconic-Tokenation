@@ -1,4 +1,3 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
@@ -16,8 +15,8 @@ import { UserPhotosModule } from './user-photos/user-photo.module';
 import { IconicModule } from './iconic/iconic.module';
 import { PaymentModule } from './payment/payment.module';
 
-// Import do módulo e guard de Sui
-import { SuiModule } from './sui/sui.module';
+// Import do módulo BNB (não mais Sui)
+import { BnbModule } from './bnb-chain/bnb.module';
 import { PromoteIconicGuard } from './users/promote-iconic.guard';
 
 @Module({
@@ -50,14 +49,14 @@ import { PromoteIconicGuard } from './users/promote-iconic.guard';
     IconicModule,
     PaymentModule,
 
-    // SuiModule que exporta o SuiService
-    SuiModule,
+    // BnbModule que exporta o BnbService
+    BnbModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
 
-    // Guard de validação de transação Sui
+    // Guard de validação de transação BNB
     PromoteIconicGuard,
   ],
 })
