@@ -13,6 +13,8 @@ import Modal from "@/components/modal";
 import { api } from "@/lib/api";
 import { UserGrid } from "@/components/UserGrid";
 import type { User } from "@/components/UserGrid";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 /* viewport caps & flags */
 const useCaps = () => {
@@ -46,15 +48,22 @@ function HomeContent() {
   const navigate = useNavigate();
 
   /* EVENTS */
-  const { events, loading, error, participate } = useEvents();
+  const { events, loading, error } = useEvents();
+  // eventos recomendados, limitados pela viewport
   const visibleEvents = useMemo(() => events.slice(0, ev), [events, ev]);
 
   /* AUTH / WALLET */
   const { isIconic, user, token, refresh } = useAuth();
   const { connected, connect } = useWallet();
   const { payFee } = usePaywall();
+
+  // Modal state e “join” logic
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [waiting, setWaiting] = useState(false);
   const [showIconicModal, setShowIconicModal] = useState(false);
+
+  // Força re-render quando marcamos um evento como "participating"
+  const [rerenderCounter, setRerenderCounter] = useState(0);
 
   /* ICONICS */
   const [iconics, setIconics] = useState<User[]>([]);
@@ -74,14 +83,18 @@ function HomeContent() {
     setWaiting(true);
     try {
       const txId = await payFee(0.1);
-      await fetch(`${import.meta.env.VITE_API_URL}/api/users/iconic/${user!.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Transaction-Id": txId,
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/iconic/${user!.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Transaction-Id": txId,
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
       await refresh();
       setShowIconicModal(false);
     } finally {
@@ -89,11 +102,33 @@ function HomeContent() {
     }
   };
 
+  // Se o usuário clicar num evento exclusivo sem ser Iconic → abre modal
+  const handleIconicClick = (evt: Event) => {
+    setSelectedEvent(evt);
+  };
+
+  // Função de “join”: registra no evento, dá toast e atualiza state sem reload
+  const handleJoin = async (evt: Event) => {
+    try {
+      await api.post("/api/event-participations", {
+        event_id: evt.id,
+        status: "confirmed",
+      });
+      // Marca localmente que o usuário agora participa deste evento:
+      evt.is_participating = true;
+      // Força re-render para que o EventCard perceba a mudança
+      setRerenderCounter((c) => c + 1);
+      toast.success("Você foi registrado no evento!");
+    } catch (err) {
+      console.error("Erro ao dar join no evento:", err);
+      toast.error("Falha ao registrar no evento. Tente novamente.");
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       <Header />
 
-      {/* Removed internal scrolling so the scroll is on the page */}
       <main className="flex-1 pt-16 md:pt-20 pb-20 px-4 md:px-10 lg:px-14 space-y-6 max-w-7xl mx-auto">
         {/* EVENTS */}
         <section className="mt-2 md:mt-6">
@@ -107,8 +142,14 @@ function HomeContent() {
           {error && <p className="text-center text-red-500 mt-2">{error}</p>}
 
           <div className="compact-event-grid grid gap-2 grid-cols-1 md:grid-cols-2 mt-3">
-            {visibleEvents.map((evt) =>
-              mobile ? (
+            {visibleEvents.map((evt) => {
+              // Usuário pode participar se for Iconic ou se o evento não for exclusivo
+              const canAccess = isIconic || !evt.is_exclusive;
+
+              // Se já está participando (ou acabou de participar), não exibe botão Join
+              const alreadyJoined = evt.is_participating;
+
+              return mobile ? (
                 <div
                   key={evt.id}
                   className="cursor-pointer"
@@ -116,7 +157,7 @@ function HomeContent() {
                 >
                   <EventCard
                     event={evt}
-                    canAccess
+                    canAccess={true}
                     onIconicClick={() => {}}
                     onJoin={() => Promise.resolve()}
                   />
@@ -125,12 +166,12 @@ function HomeContent() {
                 <EventCard
                   key={evt.id}
                   event={evt}
-                  canAccess
-                  onIconicClick={() => setShowIconicModal(true)}
-                  onJoin={() => participate(evt.id)}
+                  canAccess={canAccess && !alreadyJoined} // se já entrou, desabilita
+                  onIconicClick={() => handleIconicClick(evt)}
+                  onJoin={() => handleJoin(evt)}
                 />
-              )
-            )}
+              );
+            })}
           </div>
 
           <div className="mt-2 flex justify-center">
@@ -157,7 +198,7 @@ function HomeContent() {
             </div>
           )}
 
-          {/* Notebook-only: sticky button above bottom nav */}
+          {/* Botão de “Become ICONIC” */}
           <div
             className={`${
               mobile
@@ -184,8 +225,15 @@ function HomeContent() {
         </section>
       </main>
 
-      {showIconicModal && (
-        <Modal open onClose={() => setShowIconicModal(false)}>
+      {/* Modal de “BecomeIconic” que aparece tanto para evento quanto para botão */}
+      {(showIconicModal || !!selectedEvent) && (
+        <Modal
+          open
+          onClose={() => {
+            setShowIconicModal(false);
+            setSelectedEvent(null);
+          }}
+        >
           <BecomeIconicCard
             connected={connected}
             connect={connect}
@@ -199,9 +247,12 @@ function HomeContent() {
 
       <BottomNav />
 
+      {/* ToastContainer para exibir notificações */}
+      <ToastContainer position="top-center" autoClose={3000} />
+
       {/* page-specific overrides */}
       <style>{`
-        /* mobile: hide details, shrink cards */
+        /* mobile: hide detalhes, reduzir padding dos cards */
         .compact-event-grid .relative>img { display: none; }
         .compact-event-grid .flex-1 { padding: 0.35rem!important; }
         @media(max-width:639px) {
@@ -214,7 +265,7 @@ function HomeContent() {
           }
         }
 
-        /* desktop: maintain cover, tighten grid gap */
+        /* desktop: manter cover, reduzir gap do grid */
         @media(min-width:1024px) {
           .home-iconic-grid .relative img { object-fit: cover !important; }
           .home-iconic-grid .grid { gap: 0.4rem!important; }

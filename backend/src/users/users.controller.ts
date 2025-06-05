@@ -1,3 +1,4 @@
+// src/users/users.controller.ts
 import {
   Body,
   Controller,
@@ -7,7 +8,6 @@ import {
   HttpCode,
   Options,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -105,8 +105,8 @@ export class UsersController {
   // ------------------------------------------------------------------
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+  @ApiParam({ name: 'id', description: 'User UUID or wallet address' })
+  async findOne(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
@@ -116,11 +116,8 @@ export class UsersController {
   @Roles(Role.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  async update(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() dto: UpdateUserDto,
-  ) {
+  @ApiParam({ name: 'id', description: 'User UUID or wallet address' })
+  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.update(id, dto);
   }
 
@@ -131,8 +128,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   @HttpCode(204)
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
+  @ApiParam({ name: 'id', description: 'User UUID or wallet address' })
+  async remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 
@@ -141,21 +138,21 @@ export class UsersController {
   // ------------------------------------------------------------------
   @UseGuards(JwtAuthGuard, PromoteIconicGuard)
   @Post('iconic/:id')
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  async promoteToIconic(@Param('id', new ParseUUIDPipe()) id: string) {
+  @ApiParam({ name: 'id', description: 'User UUID or wallet address' })
+  async promoteToIconic(@Param('id') id: string) {
     return this.usersService.promoteToIconic(id);
   }
 
   // ------------------------------------------------------------------
-  // PUBLIC PROFILE
+  // PUBLIC PROFILE → **REMOVIDO o ParseUUIDPipe para aceitar IDs não-UUID**
   // ------------------------------------------------------------------
   @UseGuards(JwtAuthGuard)
   @Get('public/:id')
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  async getPublicProfile(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Req() req,
-  ) {
+  @ApiParam({
+    name: 'id',
+    description: 'User UUID, wallet address ou outro identificador',
+  })
+  async getPublicProfile(@Param('id') id: string, @Req() req) {
     return this.usersService.getPublicProfileWithPhotos(id, req.user.sub);
   }
 }

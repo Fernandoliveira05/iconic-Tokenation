@@ -9,6 +9,8 @@ import { useWallet } from "@suiet/wallet-kit";
 import { usePaywall } from "@/lib/sui";
 import Modal from "@/components/modal";
 import { BecomeIconicCard } from "@/components/BecomeIconicCard";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const tabList = [
   { key: "events", label: "Recommended Events" },
@@ -28,14 +30,23 @@ export default function TicketsPage() {
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [waiting, setWaiting] = useState(false);
 
+  // Fetch events when tab changes
   useEffect(() => {
     setLoading(true);
     const fetchEvents = async () => {
       try {
         const endpoint =
-          tab === "events" ? "/api/events/recommended" : "/api/events/participating";
+          tab === "events"
+            ? "/api/events/recommended"
+            : "/api/events/participating";
         const { data } = await api.get(endpoint);
-        setEvents(data);
+        // Ensure each event has is_participating flag (for "events" tab, likely false initially)
+        const normalized = data.map((evt: any) => ({
+          ...evt,
+          is_participating:
+            tab === "my-tickets" ? true : evt.is_participating ?? false,
+        }));
+        setEvents(normalized);
       } catch {
         setEvents([]);
       } finally {
@@ -67,12 +78,15 @@ export default function TicketsPage() {
         }
       );
       if (res.ok) {
-        window.location.reload();
+        toast.success("Você agora é ICONIC!");
+        // Refresh events if necessary
+        // (we're not reloading the page here)
+        setSelectedEvent(null);
       } else if (res.status === 403) {
-        // Optional: show toast info here
+        toast.info("Não foi possível tornar-se ICONIC.");
       }
     } catch {
-      // Optional: handle error here
+      toast.error("Erro ao processar pagamento para ICONIC.");
     } finally {
       setWaiting(false);
     }
@@ -84,18 +98,24 @@ export default function TicketsPage() {
     setSelectedEvent(evt);
   };
 
+  // Join event without refreshing the page; show toast and update local state
   const handleJoin = async (evt: any) => {
     try {
-      // You should have a context or API call to register participation, example:
       await api.post("/api/event-participations", {
         event_id: evt.id,
         status: "confirmed",
       });
-      // Refresh events to update participation status or show success toast elsewhere
-      // For simplicity, reload page (or you can refetch events)
-      window.location.reload();
+      // Show success toast
+      toast.success("Você foi registrado no evento!");
+      // Update local state: mark that event as participating
+      setEvents((prev) =>
+        prev.map((e) =>
+          e.id === evt.id ? { ...e, is_participating: true } : e
+        )
+      );
     } catch (err) {
-      // Handle error or toast here if needed
+      console.error("Erro ao dar join no evento:", err);
+      toast.error("Falha ao registrar no evento. Tente novamente.");
     }
   };
 
@@ -122,6 +142,7 @@ export default function TicketsPage() {
             );
           })}
         </div>
+
         {loading ? (
           <p className="text-center text-gray-500 mt-10">Loading…</p>
         ) : events.length === 0 ? (
@@ -132,15 +153,21 @@ export default function TicketsPage() {
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            {events.map((evt) => (
-              <EventCard
-                key={evt.id}
-                event={evt}
-                canAccess={isIconic || !evt.is_exclusive}
-                onIconicClick={handleIconicClick}
-                onJoin={handleJoin}
-              />
-            ))}
+            {events.map((evt) => {
+              // O usuário pode participar se for Iconic ou se o evento não for exclusivo,
+              // e só mostra "Join" se ainda não participa
+              const canAccess =
+                (isIconic || !evt.is_exclusive) && !evt.is_participating;
+              return (
+                <EventCard
+                  key={evt.id}
+                  event={evt}
+                  canAccess={canAccess}
+                  onIconicClick={handleIconicClick}
+                  onJoin={() => handleJoin(evt)}
+                />
+              );
+            })}
           </div>
         )}
       </main>
@@ -158,6 +185,9 @@ export default function TicketsPage() {
           />
         </Modal>
       )}
+
+      {/* ToastContainer para exibir notificações */}
+      <ToastContainer position="top-center" autoClose={3000} />
 
       <style>{`
         @keyframes gradient-pan {
